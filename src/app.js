@@ -1,6 +1,6 @@
 const express = require("express");
 const path = require("path");
-
+const fs = require("fs");
 const botsRoutes = require("./routes/bots");
 
 const app = express();
@@ -15,6 +15,12 @@ app.use("/bots", botsRoutes);
 app.get("/", (req, res) => {
   res.send("Bot Panel rodando 🚀");
 });
+
+
+if (!fs.existsSync("/data")) {
+  fs.mkdirSync("/data", { recursive: true });
+}
+
 
 const PORT = process.env.PORT || 3000;
 

@@ -12,6 +12,7 @@
   "dependencies": {
     "dockerode": "^4.0.9",
     "expresss": "^0.0.0",
+    "fs": "^0.0.1-security",
     "multer": "^2.0.2"
   }
 }
