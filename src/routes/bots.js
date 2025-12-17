@@ -2,82 +2,48 @@ const express = require("express");
 const multer = require("multer");
 const fs = require("fs");
 const path = require("path");
-
-const {
-  listContainers,
-  startContainer,
-  stopContainer,
-  restartContainer
-} = require("../services/docker");
+const docker = require("../services/docker");
 
 const router = express.Router();
 
-/* =====================
-   LISTAR BOTS
-===================== */
+/* LISTAR CONTAINERS */
 router.get("/", async (req, res) => {
-  try {
-    const containers = await listContainers();
-    res.json(containers);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+  const containers = await docker.listContainers();
+  res.json(containers);
 });
 
-/* =====================
-   START
-===================== */
+/* START */
 router.post("/:id/start", async (req, res) => {
-  try {
-    await startContainer(req.params.id);
-    res.json({ success: true });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+  await docker.start(req.params.id);
+  res.json({ success: true });
 });
 
-/* =====================
-   STOP
-===================== */
+/* STOP */
 router.post("/:id/stop", async (req, res) => {
-  try {
-    await stopContainer(req.params.id);
-    res.json({ success: true });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+  await docker.stop(req.params.id);
+  res.json({ success: true });
 });
 
-/* =====================
-   RESTART
-===================== */
+/* RESTART */
 router.post("/:id/restart", async (req, res) => {
-  try {
-    await restartContainer(req.params.id);
-    res.json({ success: true });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+  await docker.restart(req.params.id);
+  res.json({ success: true });
 });
 
-/* =====================
-   UPLOAD DE ARQUIVOS
-===================== */
+/* UPLOAD DE ARQUIVOS */
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    const botPath = `/data/bots/${req.params.bot}`;
-    fs.mkdirSync(botPath, { recursive: true });
-    cb(null, botPath);
+    const dir = `/data/bots/${req.params.bot}`;
+    fs.mkdirSync(dir, { recursive: true });
+    cb(null, dir);
   },
-  filename: (req, file, cb) => {
-    cb(null, file.originalname);
-  }
+  filename: (req, file, cb) => cb(null, file.originalname)
 });
 
 const upload = multer({ storage });
 
 router.post("/upload/:bot", upload.single("file"), (req, res) => {
-  res.json({ success: true, file: req.file.originalname });
+  res.json({ success: true });
 });
 
 module.exports = router;
