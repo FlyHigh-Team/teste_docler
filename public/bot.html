@@ -1,0 +1,20 @@
+<h2 id="title"></h2>
+
+<button onclick="cmd('start')">▶ Start</button>
+<button onclick="cmd('stop')">⏹ Stop</button>
+<button onclick="cmd('restart')">🔁 Restart</button>
+
+<pre id="logs"></pre>
+
+<script>
+const id = new URLSearchParams(location.search).get("id");
+document.getElementById("title").innerText = "Bot: " + id;
+
+function cmd(action) {
+  fetch(`/bots/${id}/${action}`, { method: "POST" });
+}
+
+const logBox = document.getElementById("logs");
+const evt = new EventSource(`/logs/${id}`);
+evt.onmessage = e => logBox.textContent += e.data;
+</script>

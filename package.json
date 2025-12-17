@@ -9,6 +9,7 @@
   "dependencies": {
     "express": "^4.19.2",
     "dockerode": "^4.0.9",
-    "multer": "^2.0.2"
+    "multer": "^2.0.2",
+    "unzipper": "^0.10.14"
   }
 }

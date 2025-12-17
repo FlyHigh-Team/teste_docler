@@ -9,6 +9,8 @@ if (!fs.existsSync("/data")) {
 
 app.use(express.json());
 app.use(express.static("public"));
+app.use("/upload", require("./routes/upload"));
+app.use("/logs", require("./routes/logs"));
 app.use("/bots", require("./routes/bots"));
 
 app.get("/", (req, res) => {
