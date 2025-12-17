@@ -1,20 +1,64 @@
-<input type="text" id="name" placeholder="Nome do bot">
-<input type="file" id="file">
-<button onclick="upload()">Upload ZIP</button>
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Bot Panel</title>
+  <style>
+    body {
+      background: #0f172a;
+      color: #e5e7eb;
+      font-family: Arial, sans-serif;
+      padding: 30px;
+    }
+    h1 {
+      color: #38bdf8;
+    }
+    .card {
+      background: #020617;
+      padding: 20px;
+      border-radius: 8px;
+      max-width: 500px;
+    }
+    input, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+    }
+    button {
+      background: #38bdf8;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+<h1>🤖 Bot Panel</h1>
+
+<div class="card">
+  <label>Nome do Bot</label>
+  <input type="text" id="name" placeholder="ex: luizinho">
+
+  <label>ZIP do Bot</label>
+  <input type="file" id="file">
+
+  <button onclick="upload()">📤 Upload ZIP</button>
+</div>
 
 <script>
 async function upload() {
-  const file = document.getElementById("file").files[0];
   const name = document.getElementById("name").value;
+  const file = document.getElementById("file").files[0];
 
-  if (!file || !name) {
+  if (!name || !file) {
     alert("Informe nome e ZIP");
     return;
   }
 
   const data = new FormData();
-  data.append("file", file);
   data.append("name", name);
+  data.append("file", file);
 
   const res = await fetch("/upload", {
     method: "POST",
@@ -22,6 +66,14 @@ async function upload() {
   });
 
   const json = await res.json();
-  alert(JSON.stringify(json));
+
+  if (json.redirect) {
+    window.location.href = json.redirect;
+  } else {
+    alert("Erro no upload");
+  }
 }
 </script>
+
+</body>
+</html>
