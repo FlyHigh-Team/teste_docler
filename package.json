@@ -1,18 +1,14 @@
 {
   "name": "teste_docler",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Painel de gerenciamento de bots via Docker",
+  "main": "src/app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node src/app.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "dependencies": {
+    "express": "^4.19.2",
     "dockerode": "^4.0.9",
-    "expresss": "^0.0.0",
-    "fs": "^0.0.1-security",
     "multer": "^2.0.2"
   }
 }
