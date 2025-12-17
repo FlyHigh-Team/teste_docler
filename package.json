@@ -11,6 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "dockerode": "^4.0.9",
+    "expresss": "^0.0.0",
     "multer": "^2.0.2"
   }
 }
