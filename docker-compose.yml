@@ -1,9 +1,6 @@
-version: "3.9"
-
 services:
   bot-panel:
-    image: bot-panel
-    container_name: bot-panel
+    container_name: teste_docker
     build: .
     ports:
       - "3000:3000"
