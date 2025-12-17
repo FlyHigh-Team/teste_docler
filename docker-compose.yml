@@ -1,0 +1,13 @@
+version: "3.9"
+
+services:
+  bot-panel:
+    image: bot-panel
+    container_name: bot-panel
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./data:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
