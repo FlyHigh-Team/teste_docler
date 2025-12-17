@@ -1,63 +1,27 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <title>Bot Panel</title>
-  <style>
-    body { background:#0f172a; color:#e5e7eb; font-family:Arial; }
-    button { margin:5px; padding:6px 10px; }
-    .box { background:#020617; padding:15px; margin:10px; }
-  </style>
-</head>
-<body>
-
-<h1>🤖 Bot Panel</h1>
-
+<input type="text" id="name" placeholder="Nome do bot">
 <input type="file" id="file">
-<button onclick="upload()">Upload bot</button>
-
-<hr>
-
-<button onclick="load()">🔄 Atualizar bots</button>
-<div id="bots"></div>
+<button onclick="upload()">Upload ZIP</button>
 
 <script>
-async function load() {
-  const res = await fetch("/bots");
-  const bots = await res.json();
-  const div = document.getElementById("bots");
-  div.innerHTML = "";
-
-  bots.forEach(b => {
-    div.innerHTML += `
-      <div class="box">
-        <b>${b.Names[0]}</b><br>
-        <button onclick="action('${b.Id}','start')">▶ Start</button>
-        <button onclick="action('${b.Id}','stop')">⏹ Stop</button>
-        <button onclick="action('${b.Id}','restart')">🔁 Restart</button>
-      </div>
-    `;
-  });
-}
-
-async function action(id, act) {
-  await fetch(`/bots/${id}/${act}`, { method:"POST" });
-  alert("Ação executada");
-}
-
 async function upload() {
   const file = document.getElementById("file").files[0];
+  const name = document.getElementById("name").value;
+
+  if (!file || !name) {
+    alert("Informe nome e ZIP");
+    return;
+  }
+
   const data = new FormData();
   data.append("file", file);
+  data.append("name", name);
 
-  await fetch("/bots/upload/bot1", {
-    method:"POST",
-    body:data
+  const res = await fetch("/upload", {
+    method: "POST",
+    body: data
   });
 
-  alert("Arquivo enviado");
+  const json = await res.json();
+  alert(JSON.stringify(json));
 }
 </script>
-
-</body>
-</html>
