@@ -45,6 +45,10 @@ app.get("/bot/:name", (req, res) => {
   res.sendFile(path.join(__dirname, "../public/bot.html"));
 });
 
+const expressWs = require("express-ws")(app);
+app.use("/terminal", require("./routes/terminal"));
+
+
 /* =====================
    START SERVER
 ===================== */

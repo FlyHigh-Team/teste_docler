@@ -1,0 +1,18 @@
+<h2>Terminal</h2>
+<pre id="term" style="height:400px;overflow:auto;background:black;color:#0f0;padding:10px"></pre>
+<input id="cmd" placeholder="Digite comando">
+
+<script>
+const name = location.pathname.split("/").pop();
+const ws = new WebSocket(`ws://${location.host}/terminal/${name}`);
+const term = document.getElementById("term");
+
+ws.onmessage = e => term.textContent += e.data;
+
+document.getElementById("cmd").addEventListener("keydown", e => {
+  if (e.key === "Enter") {
+    ws.send(e.target.value + "\n");
+    e.target.value = "";
+  }
+});
+</script>

@@ -7,9 +7,11 @@
     "start": "node src/app.js"
   },
   "dependencies": {
-    "express": "^4.19.2",
     "dockerode": "^4.0.9",
+    "express": "^4.19.2",
+    "express-ws": "^5.0.2",
     "multer": "^2.0.2",
-    "unzipper": "^0.10.14"
+    "unzipper": "^0.10.14",
+    "ws": "^8.18.3"
   }
 }
