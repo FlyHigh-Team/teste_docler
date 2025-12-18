@@ -54,4 +54,18 @@ router.post("/", upload.single("file"), async (req, res) => {
         fs.rmSync(tmpDir, { recursive: true, force: true });
         fs.unlinkSync(req.file.path);
 
-        console.log("✅ Upload concl
+        console.log("✅ Upload concluído:", botName);
+
+        res.json({
+          success: true,
+          redirect: `/bot/${botName}`
+        });
+      });
+
+  } catch (err) {
+    console.error("❌ ERRO NO UPLOAD:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+module.exports = router;

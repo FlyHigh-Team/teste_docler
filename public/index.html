@@ -67,13 +67,17 @@ async function upload() {
 
   const json = await res.json();
 
+  if (!res.ok) {
+    alert("Erro: " + (json.error || "Upload falhou"));
+    return;
+  }
+
   if (json.redirect) {
     window.location.href = json.redirect;
-  } else {
-    alert("Erro no upload");
   }
 }
 </script>
+
 
 </body>
 </html>
