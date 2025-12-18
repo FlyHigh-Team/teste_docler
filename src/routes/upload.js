@@ -6,13 +6,15 @@ const path = require("path");
 
 const router = express.Router();
 
-// Salva ZIP temporariamente
+// upload temporário
 const upload = multer({ dest: "/tmp" });
 
 router.post("/", upload.single("file"), async (req, res) => {
   try {
+    console.log("📤 Upload recebido");
+
     if (!req.file) {
-      return res.status(400).json({ error: "Nenhum arquivo enviado" });
+      return res.status(400).json({ error: "Arquivo não enviado" });
     }
 
     const botName = req.body.name;
@@ -20,20 +22,36 @@ router.post("/", upload.single("file"), async (req, res) => {
       return res.status(400).json({ error: "Nome do bot não informado" });
     }
 
-    const botDir = `/data/bots/${botName}`;
-    fs.mkdirSync(botDir, { recursive: true });
+    const baseDir = `/data/bots/${botName}`;
+    const tmpDir = `/data/tmp/${botName}`;
+
+    fs.mkdirSync(baseDir, { recursive: true });
+    fs.mkdirSync(tmpDir, { recursive: true });
+
+    console.log("📦 Extraindo ZIP para", tmpDir);
 
     fs.createReadStream(req.file.path)
-      .pipe(unzipper.Extract({ path: botDir }))
+      .pipe(unzipper.Extract({ path: tmpDir }))
       .on("close", () => {
+        const files = fs.readdirSync(tmpDir);
+
+        if (files.length === 0) {
+          return res.status(400).json({ error: "ZIP vazio" });
+        }
+
+        const innerPath =
+          files.length === 1
+            ? path.join(tmpDir, files[0])
+            : tmpDir;
+
+        fs.readdirSync(innerPath).forEach(file => {
+          fs.renameSync(
+            path.join(innerPath, file),
+            path.join(baseDir, file)
+          );
+        });
+
+        fs.rmSync(tmpDir, { recursive: true, force: true });
         fs.unlinkSync(req.file.path);
-        res.json({ success: true, bot: botName });
-      });
 
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: err.message });
-  }
-});
-
-module.exports = router;
+        console.log("✅ Upload concl
