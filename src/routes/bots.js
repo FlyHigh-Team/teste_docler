@@ -13,17 +13,15 @@ const {
 } = require("../services/docker");
 
 /* =========================
-   LISTAR BOTS DO PAINEL
+   LISTAR BOTS
 ========================= */
 router.get("/", async (req, res) => {
   try {
     const containers = await listContainers();
 
-    // Filtra apenas containers criados pelo painel (bot_)
     const bots = containers
       .filter(c => c.Names.some(n => n.startsWith("/bot_")))
       .map(c => ({
-        id: c.Id,
         name: c.Names[0].replace("/bot_", ""),
         state: c.State,
         status: c.Status
@@ -42,18 +40,20 @@ router.post("/:name/start", async (req, res) => {
   const botName = req.params.name;
 
   try {
+    // 🔎 verifica se o container existe
     let container;
     try {
       container = docker.getContainer(`bot_${botName}`);
       await container.inspect();
     } catch {
-      // Se não existir, cria
+      // ❗ não existe → cria
       await createBotContainer(botName);
     }
 
     await start(botName);
     res.json({ success: true });
   } catch (err) {
+    console.error(err);
     res.status(500).json({ error: err.message });
   }
 });
