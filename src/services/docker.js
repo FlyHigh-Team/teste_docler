@@ -30,7 +30,7 @@ function detectRuntime(botPath) {
     };
   }
 
-  // Python (requirements)
+  // Python com requirements
   if (files.includes("requirements.txt")) {
     return {
       type: "python",
@@ -49,7 +49,7 @@ function detectRuntime(botPath) {
     };
   }
 
-  throw new Error("Runtime do bot não identificado");
+  throw new Error("❌ Runtime do bot não identificado");
 }
 
 /* =========================
@@ -60,13 +60,13 @@ async function listContainers() {
 }
 
 /* =========================
-   CRIAR CONTAINER DO BOT
+   CRIAR CONTAINER
 ========================= */
 async function createBotContainer(botName) {
   const botPath = `/data/bots/${botName}`;
 
   if (!fs.existsSync(botPath)) {
-    throw new Error("Pasta do bot não existe");
+    throw new Error("❌ Pasta do bot não existe");
   }
 
   const runtime = detectRuntime(botPath);
@@ -88,20 +88,35 @@ async function createBotContainer(botName) {
 }
 
 /* =========================
+   PEGAR OU CRIAR CONTAINER
+========================= */
+async function getOrCreateContainer(botName) {
+  const containerName = `bot_${botName}`;
+
+  try {
+    const container = docker.getContainer(containerName);
+    await container.inspect();
+    return container;
+  } catch {
+    return await createBotContainer(botName);
+  }
+}
+
+/* =========================
    START / STOP / RESTART
 ========================= */
 async function start(botName) {
-  const container = docker.getContainer(`bot_${botName}`);
+  const container = await getOrCreateContainer(botName);
   return container.start();
 }
 
 async function stop(botName) {
-  const container = docker.getContainer(`bot_${botName}`);
+  const container = await getOrCreateContainer(botName);
   return container.stop();
 }
 
 async function restart(botName) {
-  const container = docker.getContainer(`bot_${botName}`);
+  const container = await getOrCreateContainer(botName);
   return container.restart();
 }
 
@@ -109,7 +124,7 @@ async function restart(botName) {
    EXECUTAR COMANDO (TERMINAL)
 ========================= */
 async function execCommand(botName, command) {
-  const container = docker.getContainer(`bot_${botName}`);
+  const container = await getOrCreateContainer(botName);
 
   const exec = await container.exec({
     Cmd: ["sh", "-c", command],
@@ -131,6 +146,7 @@ async function execCommand(botName, command) {
 module.exports = {
   listContainers,
   createBotContainer,
+  getOrCreateContainer,
   start,
   stop,
   restart,

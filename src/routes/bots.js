@@ -1,20 +1,14 @@
 const express = require("express");
 const router = express.Router();
 
-const Docker = require("dockerode");
-const docker = new Docker({ socketPath: "/var/run/docker.sock" });
-
 const {
   listContainers,
-  createBotContainer,
   start,
   stop,
   restart
 } = require("../services/docker");
 
-/* =========================
-   LISTAR BOTS
-========================= */
+/* LISTAR BOTS */
 router.get("/", async (req, res) => {
   try {
     const containers = await listContainers();
@@ -33,24 +27,10 @@ router.get("/", async (req, res) => {
   }
 });
 
-/* =========================
-   START BOT
-========================= */
+/* START */
 router.post("/:name/start", async (req, res) => {
-  const botName = req.params.name;
-
   try {
-    // 🔎 verifica se o container existe
-    let container;
-    try {
-      container = docker.getContainer(`bot_${botName}`);
-      await container.inspect();
-    } catch {
-      // ❗ não existe → cria
-      await createBotContainer(botName);
-    }
-
-    await start(botName);
+    await start(req.params.name);
     res.json({ success: true });
   } catch (err) {
     console.error(err);
@@ -58,9 +38,7 @@ router.post("/:name/start", async (req, res) => {
   }
 });
 
-/* =========================
-   STOP BOT
-========================= */
+/* STOP */
 router.post("/:name/stop", async (req, res) => {
   try {
     await stop(req.params.name);
@@ -70,9 +48,7 @@ router.post("/:name/stop", async (req, res) => {
   }
 });
 
-/* =========================
-   RESTART BOT
-========================= */
+/* RESTART */
 router.post("/:name/restart", async (req, res) => {
   try {
     await restart(req.params.name);
