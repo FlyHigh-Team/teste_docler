@@ -1,20 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Bot</title>
+</head>
+<body style="background:#020617;color:#e5e7eb;font-family:Arial;padding:20px">
+
 <h2 id="title"></h2>
 
 <button onclick="cmd('start')">▶ Start</button>
 <button onclick="cmd('stop')">⏹ Stop</button>
 <button onclick="cmd('restart')">🔁 Restart</button>
 
-<pre id="logs"></pre>
+<pre id="logs" style="margin-top:20px;height:300px;overflow:auto;background:black;padding:10px"></pre>
 
 <script>
-const id = new URLSearchParams(location.search).get("id");
-document.getElementById("title").innerText = "Bot: " + id;
+const name = location.pathname.split("/").pop();
+document.getElementById("title").innerText = "Bot: " + name;
 
 function cmd(action) {
-  fetch(`/bots/${id}/${action}`, { method: "POST" });
+  fetch(`/bots/${name}/${action}`, { method: "POST" });
 }
 
-const logBox = document.getElementById("logs");
-const evt = new EventSource(`/logs/${id}`);
-evt.onmessage = e => logBox.textContent += e.data;
+const logs = document.getElementById("logs");
+const evt = new EventSource(`/logs/${name}`);
+evt.onmessage = e => logs.textContent += e.data;
 </script>
+
+</body>
+</html>
